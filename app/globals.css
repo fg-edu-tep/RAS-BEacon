@@ -1,0 +1,62 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --beacon-yellow: #FFD700;
+  --beacon-orange: #FF8C00;
+  --beacon-purple: #9D4EDD;
+  --beacon-red: #FF4444;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  background-color: #000000;
+  color: #ffffff;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  .gradient-yellow {
+    background: linear-gradient(135deg, #FFD700 0%, #FF8C00 100%);
+  }
+  
+  .gradient-purple {
+    background: linear-gradient(135deg, #9D4EDD 0%, #FF4444 100%);
+  }
+  
+  .glow-yellow {
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+  }
+  
+  .glow-orange {
+    box-shadow: 0 0 20px rgba(255, 140, 0, 0.5);
+  }
+  
+  .glow-purple {
+    box-shadow: 0 0 20px rgba(157, 78, 221, 0.5);
+  }
+  
+  .glow-red {
+    box-shadow: 0 0 20px rgba(255, 68, 68, 0.5);
+  }
+}

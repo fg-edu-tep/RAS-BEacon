@@ -1,0 +1,136 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserStatus {
+  PENDING
+  APPROVED
+  ADMIN
+}
+
+enum CollaborationMode {
+  OPEN
+  FOCUS
+}
+
+enum BeaconStatus {
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+model User {
+  id            String        @id @default(cuid())
+  email         String        @unique
+  name          String
+  password      String
+  status        UserStatus    @default(PENDING)
+  subTeam       String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  
+  beacons       Beacon[]
+  printerBookings PrinterBooking[]
+  microWins     MicroWin[]
+  likes         Like[]
+  joins         Join[]
+  stats         UserStats?
+}
+
+model Beacon {
+  id                String            @id @default(cuid())
+  userId            String
+  user              User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  task              String
+  collaborationMode CollaborationMode
+  location          String
+  startTime         DateTime
+  endTime           DateTime?
+  status            BeaconStatus     @default(ACTIVE)
+  
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  
+  likes             Like[]
+  joins             Join[]
+  microWin          MicroWin?
+  
+  @@index([userId])
+  @@index([startTime])
+  @@index([status])
+}
+
+model Like {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  beaconId  String
+  beacon    Beacon   @relation(fields: [beaconId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  
+  @@unique([userId, beaconId])
+  @@index([beaconId])
+}
+
+model Join {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  beaconId  String
+  beacon    Beacon   @relation(fields: [beaconId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  
+  @@unique([userId, beaconId])
+  @@index([beaconId])
+}
+
+model MicroWin {
+  id        String   @id @default(cuid())
+  beaconId  String   @unique
+  beacon    Beacon   @relation(fields: [beaconId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  message   String
+  createdAt DateTime @default(now())
+  
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model PrinterBooking {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  startTime DateTime
+  endTime   DateTime
+  beaconId  String?  // Optional link to a beacon
+  createdAt DateTime @default(now())
+  
+  @@index([userId])
+  @@index([startTime])
+}
+
+model UserStats {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  totalBeacons    Int      @default(0)
+  totalHours      Float    @default(0)
+  currentStreak   Int      @default(0)
+  longestStreak   Int      @default(0)
+  lastBeaconDate  DateTime?
+  
+  updatedAt       DateTime @updatedAt
+  
+  @@index([userId])
+}
